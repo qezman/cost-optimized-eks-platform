@@ -1,4 +1,4 @@
-# IAM (Controk Plane)
+# control plane role: EKS assumes this identity to manage the cluster and related AWS resources
 resource "aws_iam_role" "cluster" {
   name = "${var.project}-${var.environment}-eks-cluster-role"
 
@@ -25,7 +25,7 @@ resource "aws_iam_role_policy_attachment" "cluster_policy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
 }
 
-# IAM (Node Group)
+# worker node role: EC2 instances need AWS permissions for Kubernetes, networking, and pulling images
 resource "aws_iam_role" "node_group" {
   name = "${var.project}-${var.environment}-eks-node-role"
 
@@ -47,9 +47,8 @@ resource "aws_iam_role" "node_group" {
   }
 }
 
-# POLICIES
-
-# worker node permissions
+# AWS-managed policies for the node role.
+# these permissions let worker nodes join the cluster, manage networking, and pull container images
 resource "aws_iam_role_policy_attachment" "node_policy" {
   role       = aws_iam_role.node_group.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
@@ -67,7 +66,7 @@ resource "aws_iam_role_policy_attachment" "ecr_policy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
 }
 
-# EKS Cluster
+# EKS cluster: runs in private subnets with a public endpoint enabled for admin access
 resource "aws_eks_cluster" "main" {
   name     = "${var.project}-${var.environment}"
   version  = var.cluster_version
@@ -94,7 +93,7 @@ resource "aws_eks_cluster" "main" {
   }
 }
 
-# OIDC Provider
+# OIDC lets Kubernetes service accounts exchange tokens for AWS IAM permissions
 data "tls_certificate" "cluster" {
   url = aws_eks_cluster.main.identity[0].oidc[0].issuer
 }
@@ -109,7 +108,7 @@ resource "aws_iam_openid_connect_provider" "cluster" {
   }
 }
 
-# Node Group
+# managed node group for running workloads in the private VPC subnets
 resource "aws_eks_node_group" "main" {
   cluster_name    = aws_eks_cluster.main.name
   node_group_name = "${var.project}-${var.environment}-nodes"
@@ -138,8 +137,10 @@ resource "aws_eks_node_group" "main" {
   }
 }
 
+# module gets the account ID
 data "aws_caller_identity" "current" {}
 
+# give the deployer IAM user direct access to the cluster so it can manage resources
 resource "aws_eks_access_entry" "terraform_user" {
   cluster_name  = aws_eks_cluster.main.name
   principal_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/cost-optimization-deployer"
