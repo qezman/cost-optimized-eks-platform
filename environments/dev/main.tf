@@ -30,3 +30,18 @@ module "workloads" {
 
   depends_on = [module.eks]
 }
+
+module "jenkins" {
+  source = "../../modules/jenkins"
+
+  project                   = var.project
+  environment               = var.environment
+  admin_cidr                = var.admin_cidr
+  jenkins_ssh_public_key    = var.jenkins_ssh_public_key
+  vpc_id                    = module.vpc.vpc_id
+  cluster_name              = module.eks.cluster_name
+  subnet_id                 = module.vpc.public_subnet_ids[0]
+  cluster_security_group_id = module.eks.cluster_security_group_id
+  terraform_state_bucket    = var.terraform_state_bucket
+  aws_region                = var.aws_region
+}

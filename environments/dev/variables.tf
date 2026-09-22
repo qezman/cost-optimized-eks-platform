@@ -1,4 +1,4 @@
-variable "region" {
+variable "aws_region" {
   description = "AWS region for all resources"
   type        = string
 }
@@ -78,4 +78,13 @@ variable "namespace" {
 variable "replicas" {
   type    = number
   default = 3
+}
+variable "jenkins_ssh_public_key" {
+  description = "SSH public key for accessing the Jenkins EC2 instance"
+  type        = string
+}
+
+variable "terraform_state_bucket" {
+  description = "Name of the S3 bucket holding Terraform state (must match bootstrap/variables.tf state_bucket_name)"
+  type        = string
 }
