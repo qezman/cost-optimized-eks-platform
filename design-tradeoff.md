@@ -17,4 +17,7 @@ Every deliberate decision made on this project, in the order made. Format:
 
 ---
 
-<!-- Add new entries below this line, oldest to newest, same 3-line format. -->
+### 3. Continuous 24h+ uptime for the baseline window
+- Chosen: leave dev environment running continuously (not destroyed between sessions) for a sustained window once all modules are applied.
+- Why: Cost Explorer/CloudWatch need continuous accumulated usage to produce a legitimate "before" baseline - destroy-between-sessions (previous entry) directly conflicts with this need.
+- Tradeoff accepted: real AWS spend accrues the whole time, unattended. Mitigated by finishing all modules first so the clock only starts once the full intended shape is running.

@@ -69,3 +69,13 @@ variable "admin_cidr" {
   description = "Admin IP allowed to access the EKS API"
   type        = string
 }
+
+variable "namespace" {
+  type    = string
+  default = "sample-workloads"
+}
+
+variable "replicas" {
+  type    = number
+  default = 3
+}

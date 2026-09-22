@@ -21,3 +21,12 @@ module "eks" {
   node_max_size      = var.node_max_size
   admin_cidr         = var.admin_cidr
 }
+
+module "workloads" {
+  source = "../../modules/workloads"
+
+  namespace = var.namespace
+  replicas  = var.replicas
+
+  depends_on = [module.eks]
+}
