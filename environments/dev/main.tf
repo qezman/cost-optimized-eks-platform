@@ -59,3 +59,10 @@ module "karpenter" {
 
   depends_on = [module.eks]
 }
+
+module "s3-lifecycle" {
+  source = "../../modules/s3-lifecycle"
+
+  project                   = var.project
+  environment               = var.environment
+}
