@@ -45,3 +45,17 @@ module "jenkins" {
   terraform_state_bucket    = var.terraform_state_bucket
   aws_region                = var.aws_region
 }
+
+module "karpenter" {
+  source = "../../modules/karpenter"
+
+  project                   = var.project
+  environment               = var.environment
+  cluster_endpoint          = module.eks.cluster_endpoint
+  cluster_name              = module.eks.cluster_name
+  cluster_oidc_issuer_url   = module.eks.cluster_oidc_issuer_url
+  private_subnet_ids        = module.vpc.private_subnet_ids
+  cluster_security_group_id = module.eks.cluster_security_group_id
+
+  depends_on = [module.eks]
+}

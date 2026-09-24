@@ -52,6 +52,10 @@ resource "aws_subnet" "private" {
     "kubernetes.io/role/internal-elb"                         = "1"
     "kubernetes.io/cluster/${var.project}-${var.environment}" = "shared"
   }
+
+  lifecycle {
+    ignore_changes = [tags["karpenter.sh/discovery"]]
+  }
 }
 
 # static IPs for NAT gateways so private subnets can reach the internet without exposing their own IPs

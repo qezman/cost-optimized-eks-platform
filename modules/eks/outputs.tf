@@ -37,3 +37,8 @@ output "cluster_security_group_id" {
   description = "ID of the EKS-managed cluster security group"
   value       = aws_eks_cluster.main.vpc_config[0].cluster_security_group_id
 }
+
+output "cluster_oidc_issuer_url" {
+  description = "The URL on the EKS cluster for the OpenID Connect identity provider"
+  value       = aws_eks_cluster.main.identity[0].oidc[0].issuer
+}
