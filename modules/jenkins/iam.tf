@@ -226,8 +226,8 @@ data "aws_iam_policy_document" "terraform_deployer" {
 
   # Permissions needed for Karpenter interruption handling and related event routing.
   statement {
-    sid    = "KarpenterInterruptionQueue"
-    effect = "Allow"
+    sid     = "KarpenterInterruptionQueue"
+    effect  = "Allow"
     actions = ["sqs:*"]
     resources = [
       "arn:aws:sqs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:${var.project}-${var.environment}-karpenter-interruption"
@@ -235,8 +235,8 @@ data "aws_iam_policy_document" "terraform_deployer" {
   }
 
   statement {
-    sid    = "KarpenterSpotInterruptionRule"
-    effect = "Allow"
+    sid     = "KarpenterSpotInterruptionRule"
+    effect  = "Allow"
     actions = ["events:*"]
     resources = [
       "arn:aws:events:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:rule/${var.project}-${var.environment}-spot-interruption"
@@ -253,7 +253,8 @@ data "aws_iam_policy_document" "terraform_deployer" {
       "s3:PutLifecycleConfiguration", "s3:GetLifecycleConfiguration",
       "s3:PutEncryptionConfiguration", "s3:GetEncryptionConfiguration",
       "s3:GetBucketPublicAccessBlock", "s3:PutBucketPublicAccessBlock",
-      "s3:PutBucketTagging", "s3:GetBucketTagging"
+      "s3:PutBucketTagging", "s3:GetBucketTagging",
+      "s3:GetBucketPolicy"
     ]
     resources = [
       "arn:aws:s3:::${var.project}-${var.environment}-logs-${data.aws_caller_identity.current.account_id}",
