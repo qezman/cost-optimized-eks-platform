@@ -254,7 +254,10 @@ data "aws_iam_policy_document" "terraform_deployer" {
       "s3:PutEncryptionConfiguration", "s3:GetEncryptionConfiguration",
       "s3:GetBucketPublicAccessBlock", "s3:PutBucketPublicAccessBlock",
       "s3:PutBucketTagging", "s3:GetBucketTagging",
-      "s3:GetBucketPolicy"
+      "s3:GetBucketPolicy", "s3:GetBucketAcl", "s3:GetBucketCORS",
+      "s3:GetBucketWebsite", "s3:GetBucketLogging",
+      "s3:GetBucketObjectLockConfiguration", "s3:GetBucketRequestPayment",
+      "s3:GetReplicationConfiguration", "s3:GetAccelerateConfiguration"
     ]
     resources = [
       "arn:aws:s3:::${var.project}-${var.environment}-logs-${data.aws_caller_identity.current.account_id}",
