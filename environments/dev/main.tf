@@ -63,6 +63,6 @@ module "karpenter" {
 module "s3-lifecycle" {
   source = "../../modules/s3-lifecycle"
 
-  project                   = var.project
-  environment               = var.environment
+  project     = var.project
+  environment = var.environment
 }
