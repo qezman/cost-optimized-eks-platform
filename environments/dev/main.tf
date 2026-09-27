@@ -19,7 +19,7 @@ module "eks" {
   node_desired_size  = var.node_desired_size
   node_min_size      = var.node_min_size
   node_max_size      = var.node_max_size
-  admin_cidr         = var.admin_cidr
+  admin_cidr         = "${chomp(data.http.my_ip.response_body)}/32"
 }
 
 module "workloads" {
@@ -36,7 +36,7 @@ module "jenkins" {
 
   project                   = var.project
   environment               = var.environment
-  admin_cidr                = var.admin_cidr
+  admin_cidr                = "${chomp(data.http.my_ip.response_body)}/32"
   jenkins_ssh_public_key    = var.jenkins_ssh_public_key
   vpc_id                    = module.vpc.vpc_id
   cluster_name              = module.eks.cluster_name

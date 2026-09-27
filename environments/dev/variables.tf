@@ -65,11 +65,6 @@ variable "node_max_size" {
   default     = 3
 }
 
-variable "admin_cidr" {
-  description = "Admin IP allowed to access the EKS API"
-  type        = string
-}
-
 variable "namespace" {
   type    = string
   default = "sample-workloads"
