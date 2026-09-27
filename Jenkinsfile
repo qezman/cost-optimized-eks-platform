@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     environment {
-        TF_DIR = "environments/dev"
-        AWS_DEFAULT_REGION = "us-east-1"
+        TF_DIR = "environments/dev"        // Terraform workspace target
+        AWS_DEFAULT_REGION = "us-east-1"   // AWS region for EKS and workloads
     }
 
     stages {
@@ -11,6 +11,7 @@ pipeline {
         stage('Lint') {
             steps {
                 dir("${TF_DIR}") {
+                    // validate Terraform formatting and config before any deployment work
                     sh 'terraform fmt -check -recursive'
                     sh 'terraform init -backend=false'
                     sh 'terraform validate'
@@ -21,7 +22,7 @@ pipeline {
         stage('Plan') {
             steps {
                 dir("${TF_DIR}") {
-                    // terraform.tfvars is never committed to the repo
+                    // tfvars is injected securely at runtime (not stored in repo)
                     withCredentials([file(credentialsId: 'tf-tfvars', variable: 'TFVARS_FILE')]) {
                         sh '''#!/bin/bash
                             set -euo pipefail
@@ -36,6 +37,7 @@ pipeline {
 
         stage('Manual Approval') {
             steps {
+                // human approval required before changing AWS/EKS resources
                 input message: 'Apply this Terraform plan?', ok: 'Apply'
             }
         }
@@ -43,6 +45,7 @@ pipeline {
         stage('Apply') {
             steps {
                 dir("${TF_DIR}") {
+                    // apply the approved plan to create/update infrastructure
                     sh 'terraform apply tfplan'
                 }
             }
@@ -51,6 +54,7 @@ pipeline {
         stage('Post-Apply Health Check') {
             steps {
                 dir("${TF_DIR}") {
+                    // confirm EKS cluster and sample workload are healthy after deploy
                     sh '''#!/bin/bash
                         set -euo pipefail
                         aws eks update-kubeconfig --name cost-optimization-dev --region us-east-1
@@ -66,6 +70,7 @@ pipeline {
     post {
         always {
             dir("${TF_DIR}") {
+                // clean temporary Terraform files to avoid stale state leakage
                 sh 'rm -f terraform.tfvars tfplan'
             }
         }
