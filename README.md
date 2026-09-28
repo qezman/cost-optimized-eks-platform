@@ -28,8 +28,6 @@ VPC → EKS cluster (a small static node group + Karpenter-managed Spot
 capacity) → Jenkins (CI/CD, `terraform apply` gated behind manual approval)
 → S3 (Terraform state + a lifecycle-managed log bucket).
 
-Full diagram and every provisioning step: see [`DEPLOYMENT.md`](./DEPLOYMENT.md).
-
 ## Cost optimizations, and the tradeoff behind each one
 
 | Optimization                                                      | Saving                                                                    | Tradeoff accepted                                                                                                                                   |
