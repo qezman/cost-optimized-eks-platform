@@ -62,6 +62,7 @@ Every deliberate decision made on this project, in the order made. Format:
 - Lesson: a single Spot launch touches three separate IAM identities' permissions (deployer, Karpenter controller, EC2 service-linked role) - real complexity worth naming, not a sign of over-engineering.
 
 ### N. Recurring IP-lock deadlock, unresolved for most of the project
+
 - Observed: admin_cidr had to be manually kept in sync with a rotating ISP IP; hit the same deadlock ~5 times - new IP not yet in the cluster's allow-list, blocking the very apply needed to update it.
 - Workaround used throughout: terraform apply -target=module.eks.aws_eks_cluster.main to narrowly unlock, then a full apply.
 - Fix (planned/applied): replaced the manually-maintained admin_cidr variable with a live http data source that detects the current IP at plan time, removing the manual step entirely.
